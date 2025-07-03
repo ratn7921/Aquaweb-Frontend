@@ -1,262 +1,699 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
-import Logo from '../assets/logo.png';
-
-const Navbar = () => {
-  const { user, logout, loading } = useAuth();
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    navigate('/login');
-  };
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-    navigate('/register');
-  };
-
-  // Add this handler for logo click
-  const handleLogoClick = () => {
-    navigate('/');
-  };
-
-  return (
-    <header className="fixed top-0 right-0 w-full z-50 bg-white/70 backdrop-blur-xl py-2 sm:py-4 px-2 sm:px-4 md:px-10 border-b border-cyan-200/60 shadow-xl flex justify-between items-center transition-all duration-300">
-      {/* Logo */}
-      <div
-        className="flex items-center gap-3 cursor-pointer"
-        onClick={handleLogoClick}
-        title="Go to Home"
-      >
-        <img
-          src={Logo}
-          alt="Logo"
-          className="h-10 w-10 object-cover rounded-full border-2 border-cyan-400 shadow-md transition-transform duration-300 hover:scale-105"
-        />
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-cyan-800 uppercase">
-          Aqua
-        </h1>
-      </div>
-      {/* Hamburger for mobile */}
-      <button
-        className="sm:hidden text-cyan-800 text-3xl focus:outline-none"
-        onClick={() => setOpen(!open)}
-        aria-label="Toggle navigation"
-      >
-        ☰
-      </button>
-      {/* Nav Items */}
-      <nav className={`flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 items-center text-sm md:text-base font-semibold text-gray-800 sm:flex ${open ? 'flex absolute top-16 left-0 w-full bg-white/95 py-4 px-2 z-50' : 'hidden sm:flex'}`}>
-        <Link
-          to={user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user'}
-          className="hover:text-cyan-600 transition block py-1"
-        >
-          Dashboard
-        </Link>
-        <Link to="/species" className="hover:text-cyan-600 transition block py-1">
-          Species
-        </Link>
-        <Link to="/trip" className="hover:text-cyan-600 transition block py-1">
-          Trip
-        </Link>
-        <Link to="/sightings" className="hover:text-cyan-600 transition block py-1">
-          Sightings
-        </Link>
-{user?.role === 'expert' && (
-  <Link to="/crimes" className="hover:text-rose-600 transition block py-1">
-    Crimes
-  </Link>
-)}
-
-
-        {user && (
-          <Link to="/profile" className="hover:text-cyan-600 transition block py-1">
-            Profile
-          </Link>
-        )}
-
- 
-
-        {user ? (
-          <button
-            onClick={handleLogout}
-            className="ml-0 sm:ml-2 bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-1.5 rounded-md text-white font-bold hover:from-blue-700 hover:to-cyan-600 transition block"
-            disabled={loading}
-          >
-            {loading ? 'Logging out...' : 'Logout'}
-          </button>
-        ) : (
-          <>
-            <button
-              onClick={handleLogin}
-              className="ml-0 sm:ml-2 bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-1.5 rounded-md text-white font-bold hover:from-blue-700 hover:to-cyan-600 transition block"
-            >
-              Login
-            </button>
-            <button
-              onClick={handleRegister}
-              className="ml-0 sm:ml-2 bg-gradient-to-r from-blue-700 to-cyan-600 px-4 py-1.5 rounded-md text-white font-bold hover:from-cyan-600 hover:to-blue-700 transition block"
-            >
-              Register
-            </button>
-          </>
-        )}
-      </nav>
-    </header>
-  );
-};
-
-export default Navbar;
 
 
 
 
-// the following code is commented out as it was not part of the recent edits
-// If you need to use it, you can uncomment it and adjust as necessary
-
-
+// // src/components/Navbar.jsx
 // import React, { useState, useEffect, useRef } from 'react';
 // import { Link, useNavigate } from 'react-router-dom';
 // import { useAuth } from '../auth/AuthContext';
 // import Logo from '../assets/logo.png';
+// import { motion, AnimatePresence } from 'framer-motion';
+// import { FaMoon, FaSun } from 'react-icons/fa';
 
-// const Navbar = () => {
+// export default function Navbar() {
 //   const { user, logout, loading } = useAuth();
 //   const navigate = useNavigate();
-//   const [open, setOpen] = useState(false);
-//   const navRef = useRef();
+//   const [mobileOpen, setMobileOpen] = useState(false);
+//   const [toolsOpen, setToolsOpen] = useState(false);
+//   const [darkMode, setDarkMode] = useState(false);
+//   const drawerRef = useRef(null);
+
+//   const primaryLinks = [
+//     { to: user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user', label: 'Dashboard' },
+//     { to: '/species', label: 'Species' },
+//     { to: '/trip', label: 'Trip' },
+//     { to: '/sightings', label: 'Sightings' },
+//   ];
+//   const toolLinks = [
+//     { to: '/book/tours', label: 'Book Tours' },
+//     { to: '/book/diving', label: 'Book Diving' },
+//     { to: '/book/flights', label: 'Book Flights' },
+//     { to: '/analytics', label: 'Analytics' },
+//     { to: '/media', label: 'Media Gallery' },
+//     { to: '/offline-queue', label: 'Offline Queue' },
+//     { to: '/crimes', label: 'Crimes', role: 'expert' },
+//   ];
+
+//   // Close dropdowns when clicking outside
+//   useEffect(() => {
+//     const onClickOutside = e => {
+//       if (drawerRef.current && !drawerRef.current.contains(e.target)) {
+//         setToolsOpen(false);
+//       }
+//     };
+//     document.addEventListener('mousedown', onClickOutside);
+//     return () => document.removeEventListener('mousedown', onClickOutside);
+//   }, []);
+
+//   // Toggle dark mode class on <html>
+//   useEffect(() => {
+//     document.documentElement.classList.toggle('dark', darkMode);
+//   }, [darkMode]);
+
+//   // Lock body scroll when mobile menu is open
+//   useEffect(() => {
+//     if (mobileOpen) {
+//       document.body.style.overflow = 'hidden';
+//     } else {
+//       document.body.style.overflow = 'unset';
+//     }
+//     return () => {
+//       document.body.style.overflow = 'unset';
+//     };
+//   }, [mobileOpen]);
+
+//   const handleNav = path => () => {
+//     setMobileOpen(false);
+//     setToolsOpen(false);
+//     navigate(path);
+//   };
 
 //   const handleLogout = () => {
 //     logout();
 //     navigate('/login');
 //   };
 
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-//     navigate('/login');
-//   };
-
-//   const handleRegister = (e) => {
-//     e.preventDefault();
-//     navigate('/register');
-//   };
-
-//   const handleLogoClick = () => {
-//     navigate('/');
-//   };
-
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (navRef.current && !navRef.current.contains(event.target)) {
-//         setOpen(false);
-//       }
-//     };
-//     if (open) {
-//       document.addEventListener('mousedown', handleClickOutside);
-//     }
-//     return () => {
-//       document.removeEventListener('mousedown', handleClickOutside);
-//     };
-//   }, [open]);
+//   // Avatar URL fallback
+//   const avatarUrl = user?.avatar?.startsWith('http')
+//     ? user.avatar
+//     : '/default-avatar.png';
 
 //   return (
 //     <>
-//       {/* Backdrop Overlay */}
-//       {open && (
-//         <div
-//           className="fixed inset-0 z-40 bg-black bg-opacity-40 backdrop-blur-sm sm:hidden"
-//           onClick={() => setOpen(false)}
-//         ></div>
-//       )}
+//       <header className="fixed top-0 w-full z-50 bg-blue-800/50 backdrop-blur-lg dark:bg-blue-900/60 transition-colors duration-300">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+//           {/* Logo */}
+//           <div className="flex items-center cursor-pointer" onClick={handleNav('/')}>
+//             <motion.img
+//               src={Logo}
+//               alt="Aqua Logo"
+//               className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border-2 border-blue-400 shadow-lg"
+//               whileHover={{ scale: 1.1 }}
+//             />
+//             <h1 className="ml-2 text-lg sm:text-xl md:text-2xl font-bold text-white uppercase drop-shadow">
+//               Aqua
+//             </h1>
+//           </div>
 
-//       <header className="fixed top-0 right-0 w-full z-50 bg-white/70 backdrop-blur-xl py-2 sm:py-4 px-2 sm:px-4 md:px-10 border-b border-cyan-200/60 shadow-xl flex justify-between items-center transition-all duration-300">
-//         <div
-//           className="flex items-center gap-3 cursor-pointer"
-//           onClick={handleLogoClick}
-//           title="Go to Home"
-//         >
-//           <img
-//             src={Logo}
-//             alt="Logo"
-//             className="h-10 w-10 object-cover rounded-full border-2 border-cyan-400 shadow-md transition-transform duration-300 hover:scale-105"
-//           />
-//           <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-cyan-800 uppercase">
-//             Aqua
-//           </h1>
-//         </div>
-//         <button
-//           className="sm:hidden text-cyan-800 text-3xl focus:outline-none z-50"
-//           onClick={() => setOpen(!open)}
-//           aria-label="Toggle navigation"
-//         >
-//           {open ? '✕' : '☰'}
-//         </button>
+//           {/* Desktop Nav */}
+//           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+//             {primaryLinks.map(link => (
+//               <Link
+//                 key={link.to}
+//                 to={link.to}
+//                 className="text-white hover:text-blue-200 font-medium transition-colors duration-200"
+//               >
+//                 {link.label}
+//               </Link>
+//             ))}
 
-//         <nav
-//           ref={navRef}
-//           className={`fixed top-16 left-0 w-full bg-white/95 py-4 px-6 z-50 transition-transform duration-300 ease-in-out transform sm:static sm:translate-x-0 sm:opacity-100 sm:flex sm:bg-transparent sm:items-center ${open ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'} flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 items-center text-sm md:text-base font-semibold text-gray-800`}
-//         >
-//           <Link
-//             to={user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user'}
-//             className="hover:text-cyan-600 transition block py-1"
-//           >
-//             Dashboard
-//           </Link>
-//           <Link to="/species" className="hover:text-cyan-600 transition block py-1">
-//             Species
-//           </Link>
-//           <Link to="/trip" className="hover:text-cyan-600 transition block py-1">
-//             Trip
-//           </Link>
-//           <Link to="/sightings" className="hover:text-cyan-600 transition block py-1">
-//             Sightings
-//           </Link>
-//           {user?.role === 'expert' && (
-//             <Link to="/crimes" className="hover:text-rose-600 transition block py-1">
-//               Crimes
-//             </Link>
-//           )}
-//           {user && (
-//             <Link to="/profile" className="hover:text-cyan-600 transition block py-1">
-//               Profile
-//             </Link>
-//           )}
-//           {user ? (
+//             <div ref={drawerRef} className="relative">
+//               <button
+//                 onClick={() => setToolsOpen(o => !o)}
+//                 className="text-white hover:text-blue-200 font-medium transition-colors duration-200"
+//               >
+//                 Tools ▾
+//               </button>
+//               <AnimatePresence>
+//                 {toolsOpen && (
+//                   <motion.div
+//                     initial={{ opacity: 0, y: -8 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     exit={{ opacity: 0, y: -8 }}
+//                     className="absolute right-0 mt-2 bg-blue-800/90 backdrop-blur-md rounded-lg shadow-lg py-2 min-w-[180px] z-[999]"
+//                   >
+//                     {toolLinks
+//                       .filter(t => !t.role || user?.role === t.role)
+//                       .map(tool => (
+//                         <Link
+//                           key={tool.to}
+//                           to={tool.to}
+//                           onClick={handleNav(tool.to)}
+//                           className="block px-4 py-2 text-white hover:bg-blue-700 transition-colors duration-200"
+//                         >
+//                           {tool.label}
+//                         </Link>
+//                       ))}
+//                   </motion.div>
+//                 )}
+//               </AnimatePresence>
+//             </div>
+//           </nav>
+
+//           {/* Desktop Auth / Profile */}
+//           <div className="hidden md:flex items-center space-x-4">
 //             <button
-//               onClick={handleLogout}
-//               className="ml-0 sm:ml-2 bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-1.5 rounded-md text-white font-bold hover:from-blue-700 hover:to-cyan-600 transition block"
-//               disabled={loading}
+//               onClick={() => setDarkMode(d => !d)}
+//               className="text-white text-lg hover:text-blue-200 transition-colors duration-200"
+//               aria-label="Toggle Dark Mode"
 //             >
-//               {loading ? 'Logging out...' : 'Logout'}
+//               {darkMode ? <FaSun /> : <FaMoon />}
 //             </button>
-//           ) : (
-//             <>
-//               <button
-//                 onClick={handleLogin}
-//                 className="ml-0 sm:ml-2 bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-1.5 rounded-md text-white font-bold hover:from-blue-700 hover:to-cyan-600 transition block"
-//               >
-//                 Login
-//               </button>
-//               <button
-//                 onClick={handleRegister}
-//                 className="ml-0 sm:ml-2 bg-gradient-to-r from-blue-700 to-cyan-600 px-4 py-1.5 rounded-md text-white font-bold hover:from-cyan-600 hover:to-blue-700 transition block"
-//               >
-//                 Register
-//               </button>
-//             </>
-//           )}
-//         </nav>
+
+//             {user ? (
+//               <>
+//                 <Link to="/profile" onClick={handleNav('/profile')}>
+//                   <img
+//                     src={avatarUrl}
+//                     alt="Profile"
+//                     className="w-8 h-8 rounded-full border-2 border-blue-400 object-cover hover:scale-110 transition-transform duration-200"
+//                     onError={e => (e.target.src = '/default-avatar.png')}
+//                   />
+//                 </Link>
+//                 <button
+//                   onClick={handleLogout}
+//                   disabled={loading}
+//                   className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-md shadow hover:from-blue-600 hover:to-blue-800 transition-all duration-200 disabled:opacity-50"
+//                 >
+//                   {loading ? 'Logging out...' : 'Logout'}
+//                 </button>
+//               </>
+//             ) : (
+//               <>
+//                 <button
+//                   onClick={handleNav('/login')}
+//                   className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition-colors duration-200"
+//                 >
+//                   Login
+//                 </button>
+//                 <button
+//                   onClick={handleNav('/register')}
+//                   className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition-colors duration-200"
+//                 >
+//                   Register
+//                 </button>
+//               </>
+//             )}
+//           </div>
+
+//           {/* Mobile Menu Button */}
+//           <button
+//             className="md:hidden text-white text-2xl focus:outline-none hover:text-blue-200 transition-colors duration-200"
+//             onClick={() => setMobileOpen(o => !o)}
+//             aria-label="Toggle mobile menu"
+//           >
+//             <motion.span
+//               animate={{ rotate: mobileOpen ? 45 : 0 }}
+//               transition={{ duration: 0.2 }}
+//             >
+//               {mobileOpen ? '✕' : '☰'}
+//             </motion.span>
+//           </button>
+//         </div>
 //       </header>
+
+//       {/* Mobile Drawer Overlay */}
+//       <AnimatePresence>
+//         {mobileOpen && (
+//           <motion.div
+//             initial={{ opacity: 0 }}
+//             animate={{ opacity: 1 }}
+//             exit={{ opacity: 0 }}
+//             transition={{ duration: 0.2 }}
+//             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+//             onClick={() => setMobileOpen(false)}
+//           />
+//         )}
+//       </AnimatePresence>
+
+//       {/* Mobile Drawer */}
+//       <AnimatePresence>
+//         {mobileOpen && (
+//           <motion.div
+//             initial={{ x: '-100%' }}
+//             animate={{ x: 0 }}
+//             exit={{ x: '-100%' }}
+//             transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+//             className="fixed inset-y-0 left-0 w-80 max-w-[85vw] z-50 md:hidden flex flex-col bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white shadow-2xl"
+//           >
+//             {/* Mobile Header */}
+//             <div className="flex items-center justify-between p-4 border-b border-blue-700/50">
+//               <div className="flex items-center">
+//                 <img
+//                   src={Logo}
+//                   alt="Aqua Logo"
+//                   className="h-8 w-8 rounded-full border-2 border-blue-400"
+//                 />
+//                 <h2 className="ml-2 text-xl font-bold">Aqua</h2>
+//               </div>
+//               <button
+//                 onClick={() => setMobileOpen(false)}
+//                 className="text-white text-2xl hover:text-blue-200 transition-colors"
+//               >
+//                 ✕
+//               </button>
+//             </div>
+
+//             {/* Mobile Navigation Content */}
+//             <div className="flex-1 overflow-y-auto p-4">
+//               {/* Primary Links */}
+//               <nav className="space-y-3 mb-6">
+//                 <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3">
+//                   Navigation
+//                 </h3>
+//                 {primaryLinks.map(link => (
+//                   <Link
+//                     key={link.to}
+//                     to={link.to}
+//                     onClick={handleNav(link.to)}
+//                     className="block w-full text-left px-4 py-3 rounded-lg text-white font-medium hover:bg-blue-700/50 transition-all duration-200 active:scale-95"
+//                   >
+//                     {link.label}
+//                   </Link>
+//                 ))}
+//               </nav>
+
+//               {/* Tools */}
+//               <nav className="space-y-3 mb-6">
+//                 <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3">
+//                   Tools
+//                 </h3>
+//                 {toolLinks
+//                   .filter(t => !t.role || user?.role === t.role)
+//                   .map(tool => (
+//                     <Link
+//                       key={tool.to}
+//                       to={tool.to}
+//                       onClick={handleNav(tool.to)}
+//                       className="block w-full text-left px-4 py-3 rounded-lg text-white font-medium hover:bg-blue-700/50 transition-all duration-200 active:scale-95"
+//                     >
+//                       {tool.label}
+//                     </Link>
+//                   ))}
+//               </nav>
+//             </div>
+
+//             {/* Mobile Footer */}
+//             <div className="border-t border-blue-700/50 p-4 space-y-4">
+//               {/* Dark Mode Toggle */}
+//               {/* <button
+//                 onClick={() => setDarkMode(d => !d)}
+//                 className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-white font-medium hover:bg-blue-700/50 transition-all duration-200"
+//                 aria-label="Toggle Dark Mode"
+//               >
+//                 <span>Dark Mode</span>
+//                 <span className="text-xl">
+//                   {darkMode ? <FaSun /> : <FaMoon />}
+//                 </span>
+//               </button> */}
+
+//               {/* User Profile / Auth */}
+//               {user ? (
+//                 <>
+//                   <Link
+//                     to="/profile"
+//                     onClick={handleNav('/profile')}
+//                     className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg hover:bg-blue-700/50 transition-all duration-200"
+//                   >
+//                     <img
+//                       src={avatarUrl}
+//                       alt="Profile"
+//                       className="w-10 h-10 rounded-full border-2 border-blue-400 object-cover"
+//                       onError={e => (e.target.src = '/default-avatar.png')}
+//                     />
+//                     <div className="flex-1">
+//                       <span className="text-white font-medium block">Profile</span>
+//                       <span className="text-blue-200 text-sm">{user.email}</span>
+//                     </div>
+//                   </Link>
+//                   <button
+//                     onClick={handleLogout}
+//                     disabled={loading}
+//                     className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 font-medium"
+//                   >
+//                     {loading ? 'Logging out...' : 'Logout'}
+//                   </button>
+//                 </>
+//               ) : (
+//                 <div className="space-y-3">
+//                   <button
+//                     onClick={handleNav('/login')}
+//                     className="w-full bg-blue-500 text-white py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 font-medium"
+//                   >
+//                     Login
+//                   </button>
+//                   <button
+//                     onClick={handleNav('/register')}
+//                     className="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 font-medium"
+//                   >
+//                     Register
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
 //     </>
 //   );
-// };
+// }
 
-// export default Navbar;
+
+
+
+
+// src/components/Navbar.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import Logo from '../assets/logo.png';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaMoon, FaSun } from 'react-icons/fa';
+
+export default function Navbar() {
+  const { user, logout, loading } = useAuth();
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const drawerRef = useRef(null);
+
+  const primaryLinks = [
+    { to: user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user', label: 'Dashboard' },
+    { to: '/species', label: 'Species' },
+    { to: '/trip', label: 'Trip' },
+    { to: '/sightings', label: 'Sightings' },
+  ];
+  const toolLinks = [
+    { to: '/book/tours', label: 'Book Tours' },
+    { to: '/book/diving', label: 'Book Diving' },
+    { to: '/book/flights', label: 'Book Flights' },
+    { to: '/analytics', label: 'Analytics' },
+    { to: '/media', label: 'Media Gallery' },
+    { to: '/offline-queue', label: 'Offline Queue' },
+    { to: '/crimes', label: 'Crimes', role: 'expert' },
+  ];
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const onClickOutside = e => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target)) {
+        setToolsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  // Toggle dark mode class on <html>
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, [darkMode]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileOpen]);
+
+  const handleNav = path => () => {
+    setMobileOpen(false);
+    setToolsOpen(false);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  // Avatar URL fallback
+  const avatarUrl = user?.avatar?.startsWith('http')
+    ? user.avatar
+    : '/default-avatar.png';
+
+  return (
+    <>
+      <header className="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-2xl border-b border-white/20 dark:bg-gray-900/10 dark:border-gray-700/20 transition-all duration-300 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+          {/* Logo */}
+          <div className="flex items-center cursor-pointer" onClick={handleNav('/')}>
+            <motion.img
+              src={Logo}
+              alt="Aqua Logo"
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border-2 border-white/30 shadow-lg backdrop-blur-sm"
+              whileHover={{ scale: 1.1 }}
+            />
+            <h1 className="ml-2 text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white uppercase drop-shadow-lg">
+              Aqua
+            </h1>
+          </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {primaryLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm"
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div ref={drawerRef} className="relative">
+              <button
+                onClick={() => setToolsOpen(o => !o)}
+                className="text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm"
+              >
+                Tools ▾
+              </button>
+              <AnimatePresence>
+                {toolsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    className="absolute right-0 mt-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl py-3 min-w-[180px] z-[999] border border-white/20 dark:border-gray-700/20"
+                  >
+                    {toolLinks
+                      .filter(t => !t.role || user?.role === t.role)
+                      .map(tool => (
+                        <Link
+                          key={tool.to}
+                          to={tool.to}
+                          onClick={handleNav(tool.to)}
+                          className="block px-4 py-3 text-gray-800 dark:text-white hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200 rounded-lg mx-2 font-medium"
+                        >
+                          {tool.label}
+                        </Link>
+                      ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </nav>
+
+          {/* Desktop Auth / Profile */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={() => setDarkMode(d => !d)}
+              className="text-gray-800 dark:text-white text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 p-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm"
+              aria-label="Toggle Dark Mode"
+            >
+              {darkMode ? <FaSun /> : <FaMoon />}
+            </button>
+
+            {user ? (
+              <>
+                <Link to="/profile" onClick={handleNav('/profile')}>
+                  <img
+                    src={avatarUrl}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full border-2 border-white/30 dark:border-gray-700/30 object-cover hover:scale-110 transition-transform duration-200 shadow-lg"
+                    onError={e => (e.target.src = '/default-avatar.png')}
+                  />
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-md shadow hover:from-blue-600 hover:to-blue-800 transition-all duration-200 disabled:opacity-50"
+                >
+                  {loading ? 'Logging out...' : 'Logout'}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleNav('/login')}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={handleNav('/register')}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition-colors duration-200"
+                >
+                  Register
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-800 dark:text-white text-2xl focus:outline-none hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 p-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm"
+            onClick={() => setMobileOpen(o => !o)}
+            aria-label="Toggle mobile menu"
+          >
+            <motion.span
+              animate={{ rotate: mobileOpen ? 45 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {mobileOpen ? '✕' : '☰'}
+            </motion.span>
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Drawer Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+            className="fixed inset-y-0 left-0 w-80 max-w-[85vw] z-50 md:hidden flex flex-col bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl text-gray-800 dark:text-white shadow-2xl border-r border-white/20 dark:border-gray-700/20"
+          >
+            {/* Mobile Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl">
+              <div className="flex items-center">
+                <img
+                  src={Logo}
+                  alt="Aqua Logo"
+                  className="h-8 w-8 rounded-full border-2 border-white/30 dark:border-gray-700/30 shadow-lg"
+                />
+                <h2 className="ml-2 text-xl font-bold">Aqua</h2>
+              </div>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="text-gray-800 dark:text-white text-2xl hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Mobile Navigation Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {/* Primary Links */}
+              <nav className="space-y-3 mb-6">
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  Navigation
+                </h3>
+                {primaryLinks.map(link => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={handleNav(link.to)}
+                    className="block w-full text-left px-4 py-3 rounded-xl text-gray-800 dark:text-white font-medium hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200 active:scale-95 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-700/30"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Tools */}
+              <nav className="space-y-3 mb-6">
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  Tools
+                </h3>
+                {toolLinks
+                  .filter(t => !t.role || user?.role === t.role)
+                  .map(tool => (
+                    <Link
+                      key={tool.to}
+                      to={tool.to}
+                      onClick={handleNav(tool.to)}
+                      className="block w-full text-left px-4 py-3 rounded-xl text-gray-800 dark:text-white font-medium hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200 active:scale-95 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-700/30"
+                    >
+                      {tool.label}
+                    </Link>
+                  ))}
+              </nav>
+            </div>
+
+            {/* Mobile Footer */}
+            <div className="border-t border-white/20 dark:border-gray-700/20 p-4 space-y-4 bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={() => setDarkMode(d => !d)}
+                className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-white font-medium hover:bg-blue-700/50 transition-all duration-200"
+                aria-label="Toggle Dark Mode"
+              >
+                <span>Dark Mode</span>
+                <span className="text-xl">
+                  {darkMode ? <FaSun /> : <FaMoon />}
+                </span>
+              </button>
+
+              {/* User Profile / Auth */}
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    onClick={handleNav('/profile')}
+                    className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-200 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-700/30"
+                  >
+                    <img
+                      src={avatarUrl}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border-2 border-white/30 dark:border-gray-700/30 object-cover shadow-lg"
+                      onError={e => (e.target.src = '/default-avatar.png')}
+                    />
+                    <div className="flex-1">
+                      <span className="text-gray-800 dark:text-white font-medium block">Profile</span>
+                      <span className="text-gray-600 dark:text-gray-400 text-sm">{user.email}</span>
+                    </div>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-red-500/80 to-red-600/80 backdrop-blur-xl text-white py-3 rounded-xl shadow-lg hover:from-red-600/90 hover:to-red-700/90 transition-all duration-200 disabled:opacity-50 font-medium border border-white/20"
+                  >
+                    {loading ? 'Logging out...' : 'Logout'}
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <button
+                    onClick={handleNav('/login')}
+                    className="w-full bg-blue-500 text-white py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 font-medium"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={handleNav('/register')}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 font-medium"
+                  >
+                    Register
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

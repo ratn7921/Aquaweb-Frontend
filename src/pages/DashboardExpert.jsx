@@ -1,140 +1,5 @@
 
 
-
-
-// import { Link } from 'react-router-dom';
-
-// export default function DashboardExpert() {
-//   const user = JSON.parse(localStorage.getItem('user'));
-//   return (
-//     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-900 via-cyan-800 to-blue-700 text-white">
-//       <div className="max-w-5xl mx-auto">
-//         <img
-//           src="/assets/dashboard-expert.jpg"
-//           alt="Expert Hero"
-//           className="w-full h-52 md:h-64 object-cover rounded-3xl shadow-xl mb-6"
-//         />
-
-//         <h2 className="text-3xl sm:text-4xl font-extrabold mb-3 drop-shadow">
-//           Welcome, {user?.name || 'Expert'} 👨‍🔬
-//         </h2>
-//         <p className="text-cyan-100 text-base sm:text-lg mb-8 max-w-2xl">
-//           Your dashboard provides quick access to field data, incident logs, and species records. Stay informed and contribute to marine conservation efforts.
-//         </p>
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-//           <Link
-//             to="/report-sighting"
-//             className="bg-white/10 hover:bg-white/20 backdrop-blur-xl p-6 rounded-2xl text-center shadow-md transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl"
-//           >
-//             <span className="text-4xl">📋</span>
-//             <div className="mt-3 font-semibold text-lg">Report Sighting</div>
-//           </Link>
-
-//           <Link
-//             to="/report-incident"
-//             className="bg-white/10 hover:bg-white/20 backdrop-blur-xl p-6 rounded-2xl text-center shadow-md transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl"
-//           >
-//             <span className="text-4xl">🚨</span>
-//             <div className="mt-3 font-semibold text-lg">Report Incident</div>
-//           </Link>
-
-//           <Link
-//             to="/trip"
-//             className="bg-white/10 hover:bg-white/20 backdrop-blur-xl p-6 rounded-2xl text-center shadow-md transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl"
-//           >
-//             <span className="text-4xl">🧭</span>
-//             <div className="mt-3 font-semibold text-lg">View Trips</div>
-//           </Link>
-
-//           <Link
-//             to="/species"
-//             className="bg-white/10 hover:bg-white/20 backdrop-blur-xl p-6 rounded-2xl text-center shadow-md transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl"
-//           >
-//             <span className="text-4xl">🐠</span>
-//             <div className="mt-3 font-semibold text-lg">Species Catalog</div>
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { motion } from 'framer-motion';
-
-// export default function DashboardExpert() {
-//   const user = JSON.parse(localStorage.getItem('user'));
-
-//   const cards = [
-//     { to: '/report-sighting', emoji: '📋', title: 'Report Sighting', color: 'from-green-400 to-teal-500' },
-//     { to: '/report-incident', emoji: '🚨', title: 'Report Incident', color: 'from-red-400 to-pink-500' },
-//     { to: '/trip', emoji: '🧭', title: 'View Trips', color: 'from-blue-400 to-indigo-500' },
-//     { to: '/species', emoji: '🐠', title: 'Species Catalog', color: 'from-yellow-400 to-orange-500' },
-//   ];
-
-//   return (
-//     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-900 via-cyan-800 to-blue-700 text-white">
-//       <div className="max-w-7xl mx-auto">
-//         <motion.img
-//           src="/assets/dashboard-expert.jpg"
-//           alt="Expert Hero"
-//           className="w-full h-60 object-cover rounded-3xl shadow-2xl mb-8"
-//           initial={{ opacity: 0, scale: 0.9 }}
-//           animate={{ opacity: 1, scale: 1 }}
-//           transition={{ duration: 0.8 }}
-//         />
-
-//         <motion.h2
-//           className="text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-lg"
-//           initial={{ x: -50, opacity: 0 }}
-//           animate={{ x: 0, opacity: 1 }}
-//           transition={{ delay: 0.2 }}
-//         >
-//           Welcome, <span className="text-cyan-300">{user?.name || 'Expert'}</span> 👨‍🔬
-//         </motion.h2>
-//         <motion.p
-//           className="text-cyan-100 text-lg mb-12 max-w-3xl leading-relaxed"
-//           initial={{ x: -50, opacity: 0 }}
-//           animate={{ x: 0, opacity: 1 }}
-//           transition={{ delay: 0.3 }}
-//         >
-//           Your dashboard provides quick access to field data, incident logs, and species records. Stay informed and contribute to marine conservation efforts.
-//         </motion.p>
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-//           {cards.map((card, idx) => (
-//             <motion.div
-//               key={card.to}
-//               whileHover={{ scale: 1.05 }}
-//               whileTap={{ scale: 0.95 }}
-//               transition={{ type: 'spring', stiffness: 300 }}
-//             >
-//               <Link
-//                 to={card.to}
-//                 className={`bg-gradient-to-br ${card.color} p-6 rounded-2xl text-center shadow-xl hover:shadow-2xl transform transition-transform duration-200`}
-//               >
-//                 <motion.span
-//                   className="text-5xl"
-//                   initial={{ rotate: -10 }}
-//                   animate={{ rotate: 0 }}
-//                   transition={{ delay: idx * 0.1 }}
-//                 >
-//                   {card.emoji}
-//                 </motion.span>
-//                 <div className="mt-4 font-semibold text-xl">{card.title}</div>
-//               </Link>
-//             </motion.div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -221,3 +86,49 @@ export default function DashboardExpert() {
     </div>
   );
 }
+
+
+
+// import React from 'react';
+// import { Link } from 'react-router-dom';
+// import { motion } from 'framer-motion';
+
+// const MotionLink = motion(Link);
+
+// export default function DashboardExpert() {
+//   const user = JSON.parse(localStorage.getItem('user')) || {};
+
+//   const cards = [
+//     { to: '/report-sighting', icon: '👁️', label: 'Report Sighting', color: 'from-green-400 to-green-600' },
+//     { to: '/report-incident', icon: '🚨', label: 'Report Incident', color: 'from-red-400 to-red-600' },
+//     { to: '/trip-history', icon: '🧭', label: 'Trip History', color: 'from-blue-400 to-blue-600' },
+//     { to: '/species', icon: '🐠', label: 'Species Catalog', color: 'from-yellow-400 to-yellow-600' },
+//   ];
+
+//   return (
+//     <>
+//       <motion.div
+//         className="min-h-screen bg-gradient-to-br from-blue-900 to-cyan-900 p-8"
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//       >
+//         <h1 className="text-4xl text-white font-bold mb-4">Welcome, {user.name || 'Expert'}</h1>
+//         <p className="text-cyan-200 mb-8">Manage and explore marine data with ease.</p>
+
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+//           {cards.map((c) => (
+//             <MotionLink
+//               to={c.to}
+//               key={c.to}
+//               whileHover={{ scale: 1.05 }}
+//               className={`relative rounded-xl p-6 text-white bg-gradient-to-br ${c.color} shadow-2xl flex flex-col items-center`}
+//             >
+//               <span className="text-5xl mb-2">{c.icon}</span>
+//               <span className="text-lg font-semibold">{c.label}</span>
+//             </MotionLink>
+//           ))}
+//         </div>
+//       </motion.div>
+//     </>
+//   );
+// }
