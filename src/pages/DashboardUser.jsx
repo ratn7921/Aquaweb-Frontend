@@ -1,234 +1,291 @@
-// import { useEffect, useState } from 'react';
+
+// import React, { useEffect, useState } from 'react';
 // import { Link } from 'react-router-dom';
 // import { useAuth } from '../auth/AuthContext';
 // import axios from '../api/axios';
 // import PostsFeed from '../components/PostsFeed';
+// import { motion } from 'framer-motion';
+
+// const MotionLink = motion(Link);
 
 // export default function DashboardUser() {
 //   const { user, loading } = useAuth();
-//   const [activity, setActivity] = useState(null);
+//   const [activity, setActivity] = useState([]);
 //   const [profile, setProfile] = useState(null);
 
 //   useEffect(() => {
-//     const fetchActivity = async () => {
-//       try {
-//         const res = await axios.get('/users/activity');
-//         setActivity(res.data);
-//       } catch (err) {
-//         console.error('Failed to load activity:', err);
-//         setActivity([]);
-//       }
-//     };
-//     fetchActivity();
+//     axios.get('/users/activity').then(res => setActivity(res.data)).catch(() => setActivity([]));
+//     axios.get('/users/me').then(res => setProfile(res.data)).catch(() => {});
 //   }, []);
 
-//   useEffect(() => {
-//     const fetchProfile = async () => {
-//       try {
-//         const res = await axios.get('/users/me');
-//         setProfile(res.data);
-//       } catch (err) {
-//         console.error('Failed to load profile:', err);
-//       }
-//     };
-//     fetchProfile();
-//   }, []);
-
-//   if (loading || !profile || activity === null) {
-//     return <div className="text-center py-10 text-white">Loading...</div>;
+//   if (loading || !profile) {
+//     return <div className="text-center py-20">Loading...</div>;
 //   }
 
-//   if (!user) return null;
-
 //   return (
-//     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900/80 via-cyan-900/70 to-blue-700/60 rounded-3xl overflow-y-auto p-4 mb-4">
-//       <div className="w-full max-w-3xl mx-auto glass-ios26 p-8 rounded-3xl shadow-2xl mb-8 mt-2">
-//         <div className="flex items-center gap-6 mb-8">
-//           {profile.avatar && (
-//             <img
-//               src={profile.avatar.startsWith('http') ? profile.avatar : `http://localhost:5000${profile.avatar}`}
-//               alt="User"
-//               className="w-24 h-24 rounded-2xl border-4 border-cyan-300 shadow-lg object-cover"
-//             />
-//           )}
-//           <div>
-//             <h2 className="text-3xl font-bold text-white drop-shadow">👋 {profile.name}</h2>
-//             <div className="text-cyan-100">{profile.email}</div>
-//             <div className="text-xs text-cyan-300 mt-1 uppercase tracking-wider">{profile.role}</div>
-//             <div className="text-cyan-200 mt-2 text-sm">{profile.description}</div>
+//     <>
+//       <motion.div
+//         className="min-h-screen bg-gradient-to-br from-blue-900 to-cyan-800 p-6"
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//       >
+//         <div className="max-w-4xl mx-auto bg-white/20 backdrop-blur-md rounded-3xl p-8 shadow-xl">
+//           {/* Profile Header */}
+//           <div className="flex items-center gap-6 mb-8">
+//             {profile.avatar && (
+//               <img
+//                 src={profile.avatar}
+//                 alt={profile.name}
+//                 className="w-24 h-24 rounded-xl border-4 border-cyan-300 shadow"
+//               />
+//             )}
+//             <div>
+//               <h2 className="text-3xl font-bold text-white">{profile.name}</h2>
+//               <p className="text-cyan-100">{profile.role.toUpperCase()}</p>
+//               <p className="text-cyan-200">{profile.email}</p>
+//             </div>
+//           </div>
+
+//           {/* Quick Links */}
+//           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+//             {[
+//               { path: '/species', icon: '🐠', label: 'Species Catalog' },
+//               { path: '/report-sighting', icon: '📋', label: 'Report Sighting' },
+//               { path: '/trip-history', icon: '🧭', label: 'Trip History' },
+//             ].map((item) => (
+//               <MotionLink
+//                 to={item.path}
+//                 key={item.path}
+//                 whileHover={{ scale: 1.05 }}
+//                 className="flex flex-col items-center bg-white/30 rounded-xl p-6 shadow-lg"
+//               >
+//                 <span className="text-4xl">{item.icon}</span>
+//                 <p className="mt-2 text-white font-semibold">{item.label}</p>
+//               </MotionLink>
+//             ))}
+//           </div>
+
+//           {/* Activity */}
+//           <h3 className="text-xl text-white mb-4">My Activity</h3>
+//           <div className="space-y-4">
+//             {activity.length === 0 ? (
+//               <p className="text-cyan-200">No recent activity.</p>
+//             ) : (
+//               activity.map((act, i) => (
+//                 <motion.div
+//                   key={i}
+//                   className="bg-white/30 rounded-lg p-4 flex items-center gap-4"
+//                   whileHover={{ scale: 1.02 }}
+//                 >
+//                   <span className="text-2xl">
+//                     {act.type === 'sighting' ? '👁️' : act.type === 'incident' ? '🚨' : '🧭'}
+//                   </span>
+//                   <div>
+//                     <p className="text-white font-bold">
+//                       {act.type === 'trip'
+//                         ? `Trip on ${new Date(act.createdAt).toLocaleDateString()}`
+//                         : `Reported ${act.type}`}
+//                     </p>
+//                     <p className="text-cyan-200 text-sm">{new Date(act.createdAt).toLocaleString()}</p>
+//                   </div>
+//                 </motion.div>
+//               ))
+//             )}
 //           </div>
 //         </div>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-//           <Link to="/species" className="glass-tile-ios26 text-center hover:scale-105 transition-all duration-200">
-//             <span className="text-4xl">🐠</span>
-//             <div className="mt-2 font-semibold text-white">Species Catalog</div>
-//           </Link>
-//           <Link to="/report-sighting" className="glass-tile-ios26 text-center hover:scale-105 transition-all duration-200">
-//             <span className="text-4xl">📋</span>
-//             <div className="mt-2 font-semibold text-white">Report Sighting</div>
-//           </Link>
-//           <Link to="/trip-history" className="glass-tile-ios26 text-center hover:scale-105 transition-all duration-200">
-//             <span className="text-4xl">🧭</span>
-//             <div className="mt-2 font-semibold text-white">Trip Activity</div>
-//           </Link>
+//         {/* Community Feed */}
+//         <div className="mt-10">
+//           <h3 className="text-2xl text-white mb-4">🌊 Community Feed</h3>
+//           <PostsFeed />
 //         </div>
-
-//         <h3 className="text-xl font-bold mb-4 text-white/90">My Activity Timeline</h3>
-//         <div className="space-y-4">
-//           {activity.length === 0 && (
-//             <div className="text-cyan-200 text-center">No activity yet.</div>
-//           )}
-//           {activity.map((item, idx) => (
-//             <div key={idx} className="flex items-center gap-4 glass-tile-ios26 px-4 py-3">
-//               <span className="text-2xl">
-//                 {item.type === 'sighting' && '👁️'}
-//                 {item.type === 'incident' && '🚨'}
-//                 {item.type === 'trip' && '🧭'}
-//               </span>
-//               <div className="flex-1">
-//                 <div className="font-semibold text-white">
-//                   {item.type === 'sighting' && `Reported a sighting: ${item.data?.species || 'Unknown species'}`}
-//                   {item.type === 'incident' && `Reported an incident: ${item.data?.type || 'Unknown type'}`}
-//                   {item.type === 'trip' && `Trip from ${item.data?.startTime ? new Date(item.data.startTime).toLocaleString() : 'N/A'} to ${item.data?.endTime ? new Date(item.data.endTime).toLocaleString() : 'N/A'}`}
-//                 </div>
-//                 <div className="text-xs text-cyan-200">
-//                   {new Date(item.timestamp || item.createdAt).toLocaleString()}
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* <h2 className="text-2xl font-bold text-white mt-8 mb-4">🌊 Public Ocean Activity Feed</h2> */}
-//       <PostsFeed />
-
-//       <style>{`
-//         .glass-ios26 {
-//           background: rgba(255,255,255,0.18);
-//           box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
-//           backdrop-filter: blur(24px) saturate(180%);
-//           -webkit-backdrop-filter: blur(24px) saturate(180%);
-//           border-radius: 32px;
-//           border: 1.5px solid rgba(255,255,255,0.22);
-//         }
-//         .glass-tile-ios26 {
-//           background: rgba(255,255,255,0.14);
-//           border-radius: 20px;
-//           box-shadow: 0 4px 24px 0 rgba(31,38,135,0.13);
-//           backdrop-filter: blur(12px) saturate(180%);
-//           -webkit-backdrop-filter: blur(12px) saturate(180%);
-//           border: 1px solid rgba(255,255,255,0.18);
-//           transition: box-shadow 0.2s, transform 0.2s;
-//         }
-//       `}</style>
-//     </div>
+//       </motion.div>
+//     </>
 //   );
 // }
-
-
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import PostsFeed from '../components/PostsFeed';
-import { motion } from 'framer-motion';
-
-const MotionLink = motion(Link);
 
 export default function DashboardUser() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [activity, setActivity] = useState([]);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    axios.get('/users/activity').then(res => setActivity(res.data)).catch(() => setActivity([]));
-    axios.get('/users/me').then(res => setProfile(res.data)).catch(() => {});
+    axios.get('/users/activity')
+      .then(res => setActivity(res.data))
+      .catch(() => setActivity([]));
+
+    axios.get('/users/me')
+      .then(res => setProfile(res.data))
+      .catch(() => {});
   }, []);
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   if (loading || !profile) {
-    return <div className="text-center py-20">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60 text-lg">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <>
-      <motion.div
-        className="min-h-screen bg-gradient-to-br from-blue-900 to-cyan-800 p-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="max-w-4xl mx-auto bg-white/20 backdrop-blur-md rounded-3xl p-8 shadow-xl">
-          {/* Profile Header */}
-          <div className="flex items-center gap-6 mb-8">
-            {profile.avatar && (
-              <img
-                src={profile.avatar}
-                alt={profile.name}
-                className="w-24 h-24 rounded-xl border-4 border-cyan-300 shadow"
-              />
-            )}
-            <div>
-              <h2 className="text-3xl font-bold text-white">{profile.name}</h2>
-              <p className="text-cyan-100">{profile.role.toUpperCase()}</p>
-              <p className="text-cyan-200">{profile.email}</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-400/20 via-transparent to-transparent"></div>
+      <div className="absolute top-0 left-0 w-full h-full opacity-40">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }}></div>
+      </div>
+
+      <div className="relative z-10 p-6 max-w-4xl mx-auto">
+        {/* Profile Section */}
+        <div className="relative mb-8 rounded-3xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20"></div>
+          <div className="relative p-8 flex items-center gap-6 mb-6">
+            {/* Avatar */}
+            <div className="relative">
+              {profile.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt={profile.name}
+                  className="w-24 h-24 rounded-2xl border-4 border-cyan-300/50 shadow-2xl"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-2xl border-4 border-cyan-300/50">
+                  <span className="text-white text-3xl font-bold">
+                    {profile.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+              )}
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-400 rounded-full border-4 border-white/20 flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Profile Info */}
+            <div className="flex-1">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+                {profile.name}
+              </h2>
+              <div className="flex items-center space-x-3 mb-2">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
+                  {profile.role.toUpperCase()}
+                </span>
+              </div>
+              <p className="text-cyan-200/80 text-lg">{profile.email}</p>
             </div>
           </div>
+        </div>
 
-          {/* Quick Links */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-            {[
-              { path: '/species', icon: '🐠', label: 'Species Catalog' },
-              { path: '/report-sighting', icon: '📋', label: 'Report Sighting' },
-              { path: '/trip-history', icon: '🧭', label: 'Trip History' },
-            ].map((item) => (
-              <MotionLink
-                to={item.path}
-                key={item.path}
-                whileHover={{ scale: 1.05 }}
-                className="flex flex-col items-center bg-white/30 rounded-xl p-6 shadow-lg"
-              >
-                <span className="text-4xl">{item.icon}</span>
-                <p className="mt-2 text-white font-semibold">{item.label}</p>
-              </MotionLink>
-            ))}
-          </div>
+        {/* Quick Links */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+          {[
+            {
+              path: '/species',
+              icon: 'M11.48 3.499a.562.562 0 011.04 0l2.125 5.111...',
+              label: 'Species Catalog',
+              color: 'from-amber-400/80 to-orange-500/80',
+              bgColor: 'bg-amber-500/10'
+            },
+            {
+              path: '/report-sighting',
+              icon: 'M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0...',
+              label: 'Report Sighting',
+              color: 'from-green-400/80 to-emerald-500/80',
+              bgColor: 'bg-green-500/10'
+            },
+            {
+              path: '/trip-history',
+              icon: 'M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437...',
+              label: 'Trip History',
+              color: 'from-blue-400/80 to-sky-500/80',
+              bgColor: 'bg-blue-500/10'
+            }
+          ].map(item => (
+            <div
+              key={item.path}
+              onClick={() => handleNavigation(item.path)}
+              className="group cursor-pointer transition-all hover:scale-105 hover:-translate-y-2"
+            >
+              <div className="relative overflow-hidden rounded-2xl bg-white/10 border border-white/20 shadow-xl backdrop-blur-xl">
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                <div className={`absolute inset-0 ${item.bgColor} opacity-50`}></div>
+                <div className="relative p-6 flex flex-col items-center space-y-4">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm flex items-center justify-center rounded-2xl shadow-lg">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                    </svg>
+                  </div>
+                  <p className="text-white font-semibold text-center">{item.label}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
-          {/* Activity */}
-          <h3 className="text-xl text-white mb-4">My Activity</h3>
+        {/* Activity Feed */}
+        <div className="mb-10">
+          <h3 className="text-2xl text-white mb-6 font-bold">My Activity</h3>
           <div className="space-y-4">
             {activity.length === 0 ? (
-              <p className="text-cyan-200">No recent activity.</p>
+              <div className="text-center py-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl">
+                <p className="text-white/60 text-lg">No recent activity</p>
+                <p className="text-white/40 text-sm mt-2">Start exploring to see your activity here</p>
+              </div>
             ) : (
               activity.map((act, i) => (
-                <motion.div
+                <div
                   key={i}
-                  className="bg-white/30 rounded-lg p-4 flex items-center gap-4"
-                  whileHover={{ scale: 1.02 }}
+                  className="group bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all"
                 >
-                  <span className="text-2xl">
-                    {act.type === 'sighting' ? '👁️' : act.type === 'incident' ? '🚨' : '🧭'}
-                  </span>
-                  <div>
-                    <p className="text-white font-bold">
-                      {act.type === 'trip'
-                        ? `Trip on ${new Date(act.createdAt).toLocaleDateString()}`
-                        : `Reported ${act.type}`}
-                    </p>
-                    <p className="text-cyan-200 text-sm">{new Date(act.createdAt).toLocaleString()}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                      <span className="text-2xl">
+                        {act.type === 'sighting' ? '👁️' : act.type === 'incident' ? '🚨' : '🧭'}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-bold text-lg">
+                        {act.type === 'trip'
+                          ? `Trip on ${new Date(act.createdAt).toLocaleDateString()}`
+                          : `Reported ${act.type}`}
+                      </p>
+                      <p className="text-white/60 text-sm">{new Date(act.createdAt).toLocaleString()}</p>
+                    </div>
                   </div>
-                </motion.div>
+                </div>
               ))
             )}
           </div>
         </div>
 
         {/* Community Feed */}
-        <div className="mt-10">
-          <h3 className="text-2xl text-white mb-4">🌊 Community Feed</h3>
+        <div className="mb-20">
+          <h3 className="text-2xl text-white font-bold flex items-center space-x-2">
+            <span>🌊</span><span>Community Feed</span>
+          </h3>
           <PostsFeed />
         </div>
-      </motion.div>
-    </>
+      </div>
+
+      {/* Floating Elements */}
+      <div className="fixed top-10 right-10 w-4 h-4 bg-cyan-400/30 rounded-full animate-pulse"></div>
+      <div className="fixed bottom-20 left-10 w-6 h-6 bg-blue-400/20 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="fixed top-1/2 left-10 w-2 h-2 bg-emerald-400/40 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+    </div>
   );
 }
