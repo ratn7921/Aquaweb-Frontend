@@ -1,4 +1,7 @@
-// // src/api/mediaApi.js
+
+
+
+// // ---------- src/api/mediaApi.js ----------
 // import axios from './axios';
 
 // export const getAllMedia = async () => {
@@ -20,8 +23,7 @@
 // };
 
 
-
-// ---------- src/api/mediaApi.js ----------
+// src/api/mediaApi.js
 import axios from './axios';
 
 export const getAllMedia = async () => {

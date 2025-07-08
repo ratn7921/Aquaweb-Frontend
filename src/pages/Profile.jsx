@@ -90,7 +90,7 @@ export default function Profile() {
   if (error)   return <div className="text-center text-red-500 mt-10">{error}</div>;
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-3xl shadow-2xs ">
       <h2 className="text-2xl font-bold mb-4">My Profile</h2>
 
       <img

@@ -1,108 +1,4 @@
 
-// import React, { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { useAuth } from '../auth/AuthContext';
-// import axios from '../api/axios';
-// import PostsFeed from '../components/PostsFeed';
-// import { motion } from 'framer-motion';
-
-// const MotionLink = motion(Link);
-
-// export default function DashboardUser() {
-//   const { user, loading } = useAuth();
-//   const [activity, setActivity] = useState([]);
-//   const [profile, setProfile] = useState(null);
-
-//   useEffect(() => {
-//     axios.get('/users/activity').then(res => setActivity(res.data)).catch(() => setActivity([]));
-//     axios.get('/users/me').then(res => setProfile(res.data)).catch(() => {});
-//   }, []);
-
-//   if (loading || !profile) {
-//     return <div className="text-center py-20">Loading...</div>;
-//   }
-
-//   return (
-//     <>
-//       <motion.div
-//         className="min-h-screen bg-gradient-to-br from-blue-900 to-cyan-800 p-6"
-//         initial={{ opacity: 0 }}
-//         animate={{ opacity: 1 }}
-//       >
-//         <div className="max-w-4xl mx-auto bg-white/20 backdrop-blur-md rounded-3xl p-8 shadow-xl">
-//           {/* Profile Header */}
-//           <div className="flex items-center gap-6 mb-8">
-//             {profile.avatar && (
-//               <img
-//                 src={profile.avatar}
-//                 alt={profile.name}
-//                 className="w-24 h-24 rounded-xl border-4 border-cyan-300 shadow"
-//               />
-//             )}
-//             <div>
-//               <h2 className="text-3xl font-bold text-white">{profile.name}</h2>
-//               <p className="text-cyan-100">{profile.role.toUpperCase()}</p>
-//               <p className="text-cyan-200">{profile.email}</p>
-//             </div>
-//           </div>
-
-//           {/* Quick Links */}
-//           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-//             {[
-//               { path: '/species', icon: '🐠', label: 'Species Catalog' },
-//               { path: '/report-sighting', icon: '📋', label: 'Report Sighting' },
-//               { path: '/trip-history', icon: '🧭', label: 'Trip History' },
-//             ].map((item) => (
-//               <MotionLink
-//                 to={item.path}
-//                 key={item.path}
-//                 whileHover={{ scale: 1.05 }}
-//                 className="flex flex-col items-center bg-white/30 rounded-xl p-6 shadow-lg"
-//               >
-//                 <span className="text-4xl">{item.icon}</span>
-//                 <p className="mt-2 text-white font-semibold">{item.label}</p>
-//               </MotionLink>
-//             ))}
-//           </div>
-
-//           {/* Activity */}
-//           <h3 className="text-xl text-white mb-4">My Activity</h3>
-//           <div className="space-y-4">
-//             {activity.length === 0 ? (
-//               <p className="text-cyan-200">No recent activity.</p>
-//             ) : (
-//               activity.map((act, i) => (
-//                 <motion.div
-//                   key={i}
-//                   className="bg-white/30 rounded-lg p-4 flex items-center gap-4"
-//                   whileHover={{ scale: 1.02 }}
-//                 >
-//                   <span className="text-2xl">
-//                     {act.type === 'sighting' ? '👁️' : act.type === 'incident' ? '🚨' : '🧭'}
-//                   </span>
-//                   <div>
-//                     <p className="text-white font-bold">
-//                       {act.type === 'trip'
-//                         ? `Trip on ${new Date(act.createdAt).toLocaleDateString()}`
-//                         : `Reported ${act.type}`}
-//                     </p>
-//                     <p className="text-cyan-200 text-sm">{new Date(act.createdAt).toLocaleString()}</p>
-//                   </div>
-//                 </motion.div>
-//               ))
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Community Feed */}
-//         <div className="mt-10">
-//           <h3 className="text-2xl text-white mb-4">🌊 Community Feed</h3>
-//           <PostsFeed />
-//         </div>
-//       </motion.div>
-//     </>
-//   );
-// }
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -141,7 +37,7 @@ export default function DashboardUser() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden rounded-4xl">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-400/20 via-transparent to-transparent"></div>
       <div className="absolute top-0 left-0 w-full h-full opacity-40">

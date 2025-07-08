@@ -21,15 +21,15 @@ export default function Navbar() {
   const primaryLinks = [
     { to: user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user', label: 'Dashboard' },
     { to: '/species', label: 'Species' },
-    { to: '/trip', label: 'Trip' },
+    { to: '/trip-history', label: 'Trip' },
     { to: '/sightings', label: 'Sightings' },
   ];
   const toolLinks = [
-    { to: '/book/tours', label: 'Book Tours' },
-    { to: '/book/diving', label: 'Book Diving' },
-    { to: '/book/flights', label: 'Book Flights' },
-     { to: '/feed',       label: 'Community' },    // ← New
-   { to: '/feed/new',   label: 'New Post' },     // ← New
+    // { to: '/book/tours', label: 'Book Tours' },
+    // { to: '/book/diving', label: 'Book Diving' },
+    // { to: '/book/flights', label: 'Book Flights' },
+    //  { to: '/feed',       label: 'Community' },    // ← New
+  //  { to: '/feed/new',   label: 'New Post' },     // ← New
     { to: '/analytics', label: 'Analytics' },
     { to: '/media', label: 'Media Gallery' },
     { to: '/offline-queue', label: 'Offline Queue' },
@@ -144,13 +144,13 @@ export default function Navbar() {
 
           {/* Desktop Auth / Profile */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
+            {/* <button
               onClick={() => setDarkMode(d => !d)}
               className="text-gray-800 dark:text-white text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 p-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm"
               aria-label="Toggle Dark Mode"
             >
               {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
+            </button> */}
 
             {user ? (
               <>
@@ -288,7 +288,7 @@ export default function Navbar() {
             {/* Mobile Footer */}
             <div className="border-t border-white/20 dark:border-gray-700/20 p-4 space-y-4 bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl">
               {/* Dark Mode Toggle */}
-              <button
+              {/* <button
                 onClick={() => setDarkMode(d => !d)}
                 className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-white font-medium hover:bg-blue-700/50 transition-all duration-200"
                 aria-label="Toggle Dark Mode"
@@ -297,7 +297,7 @@ export default function Navbar() {
                 <span className="text-xl">
                   {darkMode ? <FaSun /> : <FaMoon />}
                 </span>
-              </button>
+              </button> */}
 
               {/* User Profile / Auth */}
               {user ? (
@@ -349,3 +349,258 @@ export default function Navbar() {
     </>
   );
 }
+
+
+
+
+
+
+// // src/components/Navbar.jsx
+// import React, { useState, useEffect, useRef } from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import { useAuth } from '../auth/AuthContext';
+// import Logo from '../assets/logo.png';
+// import defaultAvatar from '../assets/logo.png'; // ✅ Ensure this file exists
+
+// import { motion, AnimatePresence } from 'framer-motion';
+
+// export default function Navbar() {
+//   const { user, logout, loading } = useAuth();
+//   const navigate = useNavigate();
+//   const [mobileOpen, setMobileOpen] = useState(false);
+//   const [toolsOpen, setToolsOpen] = useState(false);
+//   const drawerRef = useRef(null);
+
+//   const primaryLinks = [
+//     { to: user?.role === 'expert' ? '/dashboard-expert' : '/dashboard-user', label: 'Dashboard' },
+//     { to: '/species', label: 'Species' },
+//     { to: '/trip', label: 'Trip' },
+//     { to: '/sightings', label: 'Sightings' },
+//   ];
+
+//   const toolLinks = [
+//     { to: '/analytics', label: 'Analytics' },
+//     { to: '/media', label: 'Media Gallery' },
+//     { to: '/offline-queue', label: 'Offline Queue' },
+//     { to: '/crimes', label: 'Crimes', role: 'expert' },
+//   ];
+
+//   useEffect(() => {
+//     const onClickOutside = (e) => {
+//       if (drawerRef.current && !drawerRef.current.contains(e.target)) {
+//         setToolsOpen(false);
+//       }
+//     };
+//     document.addEventListener('mousedown', onClickOutside);
+//     return () => document.removeEventListener('mousedown', onClickOutside);
+//   }, []);
+
+//   useEffect(() => {
+//     document.body.style.overflow = mobileOpen ? 'hidden' : 'unset';
+//   }, [mobileOpen]);
+
+//   const handleNav = (path) => () => {
+//     setMobileOpen(false);
+//     setToolsOpen(false);
+//     navigate(path);
+//   };
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate('/login');
+//   };
+
+//   const avatarUrl = user?.avatar?.startsWith('http') ? user.avatar : defaultAvatar;
+
+//   return (
+//     <>
+//       <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-white/30 shadow-sm">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+//           <div className="flex items-center cursor-pointer" onClick={handleNav('/')}>
+//             <img src={Logo} alt="Logo" className="h-10 w-10 rounded-full shadow" />
+//             <h1 className="ml-2 text-xl font-bold text-gray-800 uppercase">Aqua</h1>
+//           </div>
+
+//           <nav className="hidden md:flex items-center space-x-6">
+//             {primaryLinks.map(link => (
+//               <Link
+//                 key={link.to}
+//                 to={link.to}
+//                 className="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition"
+//               >
+//                 {link.label}
+//               </Link>
+//             ))}
+
+//             <div ref={drawerRef} className="relative">
+//               <button
+//                 onClick={() => setToolsOpen(prev => !prev)}
+//                 className="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition"
+//               >
+//                 Tools ▾
+//               </button>
+//               <AnimatePresence>
+//                 {toolsOpen && (
+//                   <motion.div
+//                     initial={{ opacity: 0, y: -10 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     exit={{ opacity: 0, y: -10 }}
+//                     className="absolute right-0 mt-2 bg-white rounded-md shadow-xl py-2 z-50 w-48 border"
+//                   >
+//                     {toolLinks
+//                       .filter(tool => !tool.role || user?.role === tool.role)
+//                       .map(tool => (
+//                         <Link
+//                           key={tool.to}
+//                           to={tool.to}
+//                           onClick={handleNav(tool.to)}
+//                           className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+//                         >
+//                           {tool.label}
+//                         </Link>
+//                       ))}
+//                   </motion.div>
+//                 )}
+//               </AnimatePresence>
+//             </div>
+//           </nav>
+
+//           <div className="hidden md:flex items-center space-x-4">
+//             {user ? (
+//               <>
+//                 <Link to="/profile" onClick={handleNav('/profile')}>
+//                   <img
+//                     src={avatarUrl}
+//                     alt="Profile"
+//                     className="w-8 h-8 rounded-full object-cover border border-gray-300 shadow"
+//                     onError={(e) => (e.target.src = defaultAvatar)}
+//                   />
+//                 </Link>
+//                 <button
+//                   onClick={handleLogout}
+//                   disabled={loading}
+//                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+//                 >
+//                   {loading ? 'Logging out...' : 'Logout'}
+//                 </button>
+//               </>
+//             ) : (
+//               <>
+//                 <button
+//                   onClick={handleNav('/login')}
+//                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+//                 >
+//                   Login
+//                 </button>
+//                 <button
+//                   onClick={handleNav('/register')}
+//                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+//                 >
+//                   Register
+//                 </button>
+//               </>
+//             )}
+//           </div>
+
+//           {/* Mobile toggle */}
+//           <button
+//             className="md:hidden text-2xl text-gray-700"
+//             onClick={() => setMobileOpen(o => !o)}
+//           >
+//             {mobileOpen ? '✕' : '☰'}
+//           </button>
+//         </div>
+//       </header>
+
+//       <AnimatePresence>
+//         {mobileOpen && (
+//           <motion.div
+//             initial={{ x: '-100%' }}
+//             animate={{ x: 0 }}
+//             exit={{ x: '-100%' }}
+//             className="fixed inset-y-0 left-0 w-64 bg-white z-50 p-6 flex flex-col shadow-lg"
+//           >
+//             <div className="mb-6 flex justify-between items-center">
+//               <div className="flex items-center">
+//                 <img src={Logo} alt="Logo" className="h-8 w-8 rounded-full" />
+//                 <span className="ml-2 text-lg font-semibold">Aqua</span>
+//               </div>
+//               <button onClick={() => setMobileOpen(false)} className="text-2xl">×</button>
+//             </div>
+
+//             {primaryLinks.map(link => (
+//               <Link
+//                 key={link.to}
+//                 to={link.to}
+//                 onClick={handleNav(link.to)}
+//                 className="mb-3 text-gray-700 font-medium"
+//               >
+//                 {link.label}
+//               </Link>
+//             ))}
+
+//             <div className="mt-6">
+//               {toolLinks
+//                 .filter(tool => !tool.role || user?.role === tool.role)
+//                 .map(tool => (
+//                   <Link
+//                     key={tool.to}
+//                     to={tool.to}
+//                     onClick={handleNav(tool.to)}
+//                     className="block mb-3 text-gray-700 font-medium"
+//                   >
+//                     {tool.label}
+//                   </Link>
+//                 ))}
+//             </div>
+
+//             <div className="mt-auto pt-6 border-t">
+//               {user ? (
+//                 <>
+//                   <Link
+//                     to="/profile"
+//                     onClick={handleNav('/profile')}
+//                     className="flex items-center gap-3 mb-4"
+//                   >
+//                     <img
+//                       src={avatarUrl}
+//                       alt="Profile"
+//                       className="w-10 h-10 rounded-full object-cover border"
+//                       onError={(e) => (e.target.src = defaultAvatar)}
+//                     />
+//                     <div>
+//                       <p className="text-sm font-medium">{user.email}</p>
+//                       <p className="text-xs text-gray-500">Profile</p>
+//                     </div>
+//                   </Link>
+//                   <button
+//                     onClick={handleLogout}
+//                     disabled={loading}
+//                     className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+//                   >
+//                     {loading ? 'Logging out...' : 'Logout'}
+//                   </button>
+//                 </>
+//               ) : (
+//                 <div className="space-y-2">
+//                   <button
+//                     onClick={handleNav('/login')}
+//                     className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+//                   >
+//                     Login
+//                   </button>
+//                   <button
+//                     onClick={handleNav('/register')}
+//                     className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+//                   >
+//                     Register
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </>
+//   );
+// }

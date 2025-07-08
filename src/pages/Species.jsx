@@ -2,76 +2,145 @@
 
 // // src/pages/Species.jsx
 // import React, { useEffect, useState } from 'react';
-// import axios from '../api/axios';
 // import { useSearchParams } from 'react-router-dom';
+// import axios from 'axios';
+
+// // GBIF + OBIS helpers
+// async function searchSpeciesFromGBIF(name) {
+//   try {
+//     const res = await axios.get(`https://api.gbif.org/v1/species/search?q=${encodeURIComponent(name)}`);
+//     return res.data.results || [];
+//   } catch (err) {
+//     console.error('❌ GBIF fetch error:', err.message);
+//     return [];
+//   }
+// }
+
+// async function getOccurrencesFromOBIS(scientificName) {
+//   try {
+//     const res = await axios.get(`https://api.obis.org/v3/occurrence`, {
+//       params: { scientificname: scientificName, limit: 50 },
+//     });
+//     return res.data.results || [];
+//   } catch (err) {
+//     console.error('❌ OBIS fetch error:', err.message);
+//     return [];
+//   }
+// }
+
+// async function getSpeciesImage(speciesKey, fallbackName) {
+//   try {
+//     const mediaRes = await axios.get(`https://api.gbif.org/v1/species/${speciesKey}/media`);
+//     return mediaRes.data.results?.[0]?.identifier || await getFallbackImage(fallbackName);
+//   } catch {
+//     return await getFallbackImage(fallbackName);
+//   }
+// }
+
+// async function getFallbackImage(speciesName) {
+//   try {
+//     const res = await axios.get('https://en.wikipedia.org/w/api.php', {
+//       params: {
+//         action: 'query',
+//         format: 'json',
+//         prop: 'pageimages',
+//         piprop: 'original',
+//         titles: speciesName,
+//         origin: '*',
+//       },
+//     });
+//     const pages = res.data.query?.pages;
+//     const page = pages ? Object.values(pages)[0] : null;
+//     return page?.original?.source || null;
+//   } catch {
+//     return null;
+//   }
+// }
 
 // export default function Species() {
 //   const [species, setSpecies] = useState([]);
-//   const [wormsSpecies, setWormsSpecies] = useState([]);
+//   const [externalSpecies, setExternalSpecies] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState('');
 //   const [modal, setModal] = useState(null);
-//   const [search, setSearch] = useState('Clownfish');
-//   const [searchParams] = useSearchParams();
+
+//   const [searchParams, setSearchParams] = useSearchParams();
+//   const search = searchParams.get('name') || 'Clownfish';
 
 //   useEffect(() => {
-//     const filterFromURL = searchParams.get('filter');
-//     if (filterFromURL) {
-//       setSearch(filterFromURL);
-//     }
-//   }, [searchParams]);
+//     async function fetchData() {
+//       setLoading(true);
+//       setError('');
+//       setSpecies([]);
+//       setExternalSpecies([]);
 
-//   useEffect(() => {
-//     let localDone = false;
-//     let wormsDone = false;
-//     setLoading(true);
-//     setError('');
-//     setWormsSpecies([]);
-//     setSpecies([]);
+//       try {
+//         const gbifResults = await searchSpeciesFromGBIF(search);
 
-//     axios.get('/species')
-//       .then(res => setSpecies(res.data))
-//       .catch(() => setError(prev => prev + '\n❌ Failed to load local species.'))
-//       .finally(() => {
-//         localDone = true;
-//         if (wormsDone) setLoading(false);
-//       });
+//         if (gbifResults.length > 0) {
+//           const enrichedSpecies = await Promise.all(
+//             gbifResults.map(async (item) => {
+//               const image = await getSpeciesImage(item.key, item.canonicalName || item.scientificName);
+//               return {
+//                 name: item.vernacularName || item.canonicalName || item.scientificName,
+//                 scientificName: item.scientificName,
+//                 rank: item.rank,
+//                 description: item.kingdom || item.family || '',
+//                 image,
+//                 _source: 'GBIF',
+//               };
+//             })
+//           );
+//           setSpecies(enrichedSpecies);
 
-//     axios.get(`/worms/${encodeURIComponent(search)}`)
-//       .then(res => {
-//         if (Array.isArray(res.data)) {
-//           setWormsSpecies(res.data);
+//           const scientificName = gbifResults[0].scientificName;
+//           const obisData = await getOccurrencesFromOBIS(scientificName);
+//           setExternalSpecies(
+//             obisData.map((o) => ({
+//               name: scientificName,
+//               habitat: o.environment || '',
+//               location: o.decimalLatitude && o.decimalLongitude ? { lat: o.decimalLatitude, lng: o.decimalLongitude } : null,
+//               createdAt: o.eventDate || '',
+//               _source: 'OBIS',
+//             }))
+//           );
 //         } else {
-//           setError(prev => prev + '\n❌ Unexpected WoRMS response format.');
+//           setError(`No results found for "${search}".`);
 //         }
-//       })
-//       .catch(err => {
-//   console.error('🐛 WoRMS error:', err?.response?.data || err.message);
-//   setError(prev => prev + `\n❌ Failed to fetch from WoRMS for "${search}".`);
-// })
+//       } catch (err) {
+//         setError(`Failed to fetch species for "${search}".`);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
 
-//       .finally(() => {
-//         wormsDone = true;
-//         if (localDone) setLoading(false);
-//       });
+//     fetchData();
 //   }, [search]);
 
 //   const allResults = [
-//     ...species.map(sp => ({ ...sp, _source: 'Local DB' })),
-//     ...wormsSpecies.map(ws => ({ ...ws, _source: ws.source || 'API' }))
+//     ...species,
+//     ...externalSpecies,
 //   ];
-//   const noResults = !loading && allResults.length === 0;
 
-//   if (loading) return <div className="text-center text-white mt-10">Loading species...</div>;
-//   if (error) return <div className="text-center text-red-400 whitespace-pre-line mt-10">{error}</div>;
+//   const noResults = !loading && allResults.length === 0;
 
 //   return (
 //     <div className="p-6 text-white">
 //       <div className="flex items-center justify-between mb-4">
 //         <h2 className="text-2xl font-bold">Species Catalog</h2>
-//         <span className="bg-cyan-700 text-white px-3 py-1 rounded-full text-sm font-semibold">Total: {allResults.length}</span>
+//         <span className="bg-cyan-700 text-white px-3 py-1 rounded-full text-sm font-semibold">
+//           Total: {allResults.length}
+//         </span>
 //       </div>
-//       <form onSubmit={e => { e.preventDefault(); setSearch(e.target.elements.speciesSearch.value); }} className="mb-6 flex gap-2">
+
+//       <form
+//         onSubmit={(e) => {
+//           e.preventDefault();
+//           const newSearch = e.target.elements.speciesSearch.value;
+//           setSearchParams({ name: newSearch });
+//         }}
+//         className="mb-6 flex gap-2"
+//       >
 //         <input
 //           type="text"
 //           name="speciesSearch"
@@ -79,11 +148,23 @@
 //           placeholder="Search marine species (e.g. Dolphin, Tuna)"
 //           className="p-2 rounded border border-cyan-400 text-black w-64"
 //         />
-//         <button type="submit" className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800">Search</button>
+//         <button
+//           type="submit"
+//           className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800"
+//         >
+//           Search
+//         </button>
 //       </form>
+
+//       {loading && <div className="text-center text-white mt-10">Loading species...</div>}
+//       {error && <div className="text-center text-red-400 whitespace-pre-line mt-10">{error}</div>}
+
 //       {noResults && (
-//         <div className="text-center text-cyan-200 italic mb-8">No results found for "{search}". Try another species name.</div>
+//         <div className="text-center text-cyan-200 italic mb-8">
+//           No results found for "{search}". Try another species name.
+//         </div>
 //       )}
+
 //       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 //         {allResults.map((item, idx) => (
 //           <div
@@ -95,47 +176,156 @@
 //               src={item.imageUrl || item.image || '/default-avatar.png'}
 //               alt={item.name}
 //               className="w-32 h-32 object-cover rounded mb-2 border-2 border-cyan-400 bg-white/20"
-//               onError={e => { e.target.onerror = null; e.target.src = '/default-avatar.png'; }}
+//               onError={(e) => {
+//                 e.target.onerror = null;
+//                 e.target.src = '/default-avatar.png';
+//               }}
 //             />
 //             <h3 className="text-lg font-semibold text-cyan-100 mb-1">{item.name}</h3>
-//             <div className="text-xs text-cyan-300 italic mb-2">{item.scientificName || item.authority}</div>
-//             <div className="text-sm mb-2 text-cyan-50 text-center">{item.description || (item.rank ? `Rank: ${item.rank}` : '')}</div>
-//             <div className="text-xs text-cyan-200 mb-2">{item.habitat && `Habitat: ${item.habitat}`}</div>
-//             <span className={`mt-2 text-xs px-2 py-0.5 rounded ${item._source === 'Local DB' ? 'bg-cyan-800' : item._source === 'WoRMS' ? 'bg-blue-800' : 'bg-green-800'} text-white`}>
+//             <div className="text-xs text-cyan-300 italic mb-2">
+//               {item.scientificName || item.authority}
+//             </div>
+//             <div className="text-sm mb-2 text-cyan-50 text-center">
+//               {item.description || (item.rank ? `Rank: ${item.rank}` : '')}
+//             </div>
+//             <div className="text-xs text-cyan-200 mb-2">
+//               {item.habitat && `Habitat: ${item.habitat}`}
+//             </div>
+//             <span
+//               className={`mt-2 text-xs px-2 py-0.5 rounded ${
+//                 item._source === 'GBIF' ? 'bg-cyan-800' : 'bg-green-800'
+//               } text-white`}
+//             >
 //               {item._source}
 //             </span>
 //           </div>
 //         ))}
 //       </div>
 
+// {modal && (
+//   <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+//     <div className="bg-white text-black rounded-xl p-8 max-w-lg w-full relative overflow-y-auto max-h-[90vh]">
+//       <button
+//         className="absolute top-2 right-2 text-2xl text-cyan-700"
+//         onClick={() => setModal(null)}
+//       >
+//         &times;
+//       </button>
+
+//       {/* Image */}
+//       <img
+//         src={modal.imageUrl || modal.image || '/default-avatar.png'}
+//         alt={modal.name}
+//         className="w-40 h-40 object-cover rounded mx-auto mb-4 border-2 border-cyan-400"
+//       />
+
+//       {/* Core Info */}
+//       <h2 className="text-2xl font-bold mb-1 text-cyan-800 text-center">{modal.name}</h2>
+//       <div className="text-sm text-center text-cyan-700 mb-2 italic">
+//         {modal.scientificName || 'Unknown scientific name'}
+//       </div>
+
+//       {/* Research Details */}
+//       <div className="space-y-2 text-sm">
+//         {modal.rank && <p><strong>Rank:</strong> {modal.rank}</p>}
+//         {modal.description && <p><strong>Description:</strong> {modal.description}</p>}
+//         {modal.habitat && <p><strong>Habitat:</strong> {modal.habitat}</p>}
+//         {modal.kingdom && <p><strong>Kingdom:</strong> {modal.kingdom}</p>}
+//         {modal.family && <p><strong>Family:</strong> {modal.family}</p>}
+
+//         {/* External Research Links */}
+//         <div className="mt-4">
+//           <p className="font-semibold">Research Links:</p>
+//           <ul className="list-disc list-inside text-cyan-800 text-xs">
+//             <li>
+//               <a
+//                 href={`https://www.gbif.org/species/search?q=${modal.scientificName}`}
+//                 target="_blank"
+//                 rel="noreferrer"
+//               >
+//                 GBIF
+//               </a>
+//             </li>
+//             <li>
+//               <a
+//                 href={`https://www.marinespecies.org/aphia.php?p=search&q=${modal.scientificName}`}
+//                 target="_blank"
+//                 rel="noreferrer"
+//               >
+//                 WoRMS
+//               </a>
+//             </li>
+//             <li>
+//               <a
+//                 href={`https://www.fishbase.se/search.php?what=species&genus=${modal.scientificName?.split(' ')[0]}`}
+//                 target="_blank"
+//                 rel="noreferrer"
+//               >
+//                 FishBase
+//               </a>
+//             </li>
+//             <li>
+//               <a
+//                 href={`https://en.wikipedia.org/wiki/${modal.scientificName?.replace(/\s+/g, '_')}`}
+//                 target="_blank"
+//                 rel="noreferrer"
+//               >
+//                 Wikipedia
+//               </a>
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// )}
+
+
+
+// {/* 
 //       {modal && (
 //         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 //           <div className="bg-white text-black rounded-xl p-8 max-w-md w-full relative">
-//             <button className="absolute top-2 right-2 text-2xl text-cyan-700" onClick={() => setModal(null)}>&times;</button>
+//             <button
+//               className="absolute top-2 right-2 text-2xl text-cyan-700"
+//               onClick={() => setModal(null)}
+//             >
+//               &times;
+//             </button>
 //             <img
 //               src={modal.imageUrl || modal.image || '/default-avatar.png'}
 //               alt={modal.name}
 //               className="w-40 h-40 object-cover rounded mx-auto mb-4 border-2 border-cyan-400"
-//               onError={e => { e.target.onerror = null; e.target.src = '/default-avatar.png'; }}
+//               onError={(e) => {
+//                 e.target.onerror = null;
+//                 e.target.src = '/default-avatar.png';
+//               }}
 //             />
 //             <h2 className="text-2xl font-bold mb-2 text-cyan-800">{modal.name}</h2>
-//             <div className="text-sm text-cyan-700 mb-2">{modal.scientificName || modal.authority}</div>
-//             <div className="mb-2">{modal.description || (modal.rank ? `Rank: ${modal.rank}` : '')}</div>
-//             <div className="mb-2 text-xs text-cyan-700">{modal.habitat && `Habitat: ${modal.habitat}`}</div>
-//             {modal.facts && modal.facts.length > 0 && (
-//               <ul className="text-xs text-cyan-700 list-disc pl-4 mb-2">
-//                 {modal.facts.map((fact, idx) => <li key={idx}>{fact}</li>)}
-//               </ul>
-//             )}
+//             <div className="text-sm text-cyan-700 mb-2">
+//               {modal.scientificName || modal.authority}
+//             </div>
+//             <div className="mb-2">
+//               {modal.description || (modal.rank ? `Rank: ${modal.rank}` : '')}
+//             </div>
+//             <div className="mb-2 text-xs text-cyan-700">
+//               {modal.habitat && `Habitat: ${modal.habitat}`}
+//             </div>
 //             {modal.sightings && modal.sightings.length > 0 && (
 //               <div className="mt-4">
 //                 <h4 className="text-md font-semibold text-cyan-700 mb-2">Sightings:</h4>
 //                 <ul className="text-xs text-gray-800 max-h-40 overflow-y-auto space-y-1">
 //                   {modal.sightings.map((s, i) => (
 //                     <li key={i} className="p-2 bg-cyan-100/30 rounded">
-//                       <span className="block font-medium">{s.reporter || 'added from satellite'}</span>
-//                       <span className="block text-xs">📍 {s.location?.lat}, {s.location?.lng}</span>
-//                       <span className="block text-xs">🕒 {new Date(s.createdAt).toLocaleString()}</span>
+//                       <span className="block font-medium">
+//                         {s.reporter || 'added from satellite'}
+//                       </span>
+//                       <span className="block text-xs">
+//                         📍 {s.location?.lat}, {s.location?.lng}
+//                       </span>
+//                       <span className="block text-xs">
+//                         🕒 {new Date(s.createdAt).toLocaleString()}
+//                       </span>
 //                     </li>
 //                   ))}
 //                 </ul>
@@ -144,15 +334,41 @@
 //             <div className="text-xs text-gray-500 mt-2">Source: {modal._source}</div>
 //           </div>
 //         </div>
-//       )}
+//       )} */}
 //     </div>
 //   );
 // }
 
+
+
 // src/pages/Species.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from '../api/axios';
+import axios from 'axios';
+
+// ✅ GBIF species search
+async function searchSpeciesFromGBIF(name) {
+  try {
+    const res = await axios.get(`https://api.gbif.org/v1/species/search?q=${encodeURIComponent(name)}`);
+    return res.data.results || [];
+  } catch (err) {
+    console.error('❌ GBIF fetch error:', err.message);
+    return [];
+  }
+}
+
+// ✅ OBIS occurrence records
+async function getOccurrencesFromOBIS(scientificName) {
+  try {
+    const res = await axios.get(`https://api.obis.org/v3/occurrence`, {
+      params: { scientificname: scientificName, limit: 50 },
+    });
+    return res.data.results || [];
+  } catch (err) {
+    console.error('❌ OBIS fetch error:', err.message);
+    return [];
+  }
+}
 
 export default function Species() {
   const [species, setSpecies] = useState([]);
@@ -160,31 +376,60 @@ export default function Species() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modal, setModal] = useState(null);
-
   const [searchParams, setSearchParams] = useSearchParams();
+
   const search = searchParams.get('name') || 'Clownfish';
 
   useEffect(() => {
-    setLoading(true);
-    setError('');
-    setSpecies([]);
-    setExternalSpecies([]);
+    async function fetchData() {
+      setLoading(true);
+      setError('');
+      setSpecies([]);
+      setExternalSpecies([]);
 
-    axios
-      .get(`/species?name=${encodeURIComponent(search)}`)
-      .then((res) => {
-        if (Array.isArray(res.data.local)) setSpecies(res.data.local);
-        if (Array.isArray(res.data.external)) setExternalSpecies(res.data.external);
-      })
-      .catch(() => setError(`❌ Failed to fetch species for "${search}".`))
-      .finally(() => setLoading(false));
+      try {
+        const gbifResults = await searchSpeciesFromGBIF(search);
+
+        if (gbifResults.length > 0) {
+          const formatted = gbifResults.map((item) => ({
+            name: item.vernacularName || item.canonicalName || item.scientificName,
+            scientificName: item.scientificName,
+            rank: item.rank,
+            description: item.kingdom || item.family || '',
+            kingdom: item.kingdom,
+            family: item.family,
+            _source: 'GBIF',
+          }));
+          setSpecies(formatted);
+
+          const scientificName = gbifResults[0].scientificName;
+          const obisData = await getOccurrencesFromOBIS(scientificName);
+
+          const externalFormatted = obisData.map((o) => ({
+            name: scientificName,
+            habitat: o.environment || '',
+            location: o.decimalLatitude && o.decimalLongitude
+              ? { lat: o.decimalLatitude, lng: o.decimalLongitude }
+              : null,
+            createdAt: o.eventDate || '',
+            _source: 'OBIS',
+          }));
+
+          setExternalSpecies(externalFormatted);
+        } else {
+          setError(`No results found for "${search}".`);
+        }
+      } catch {
+        setError(`Failed to fetch species for "${search}".`);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
   }, [search]);
 
-  const allResults = [
-    ...species.map((sp) => ({ ...sp, _source: 'Local DB' })),
-    ...externalSpecies.map((ws) => ({ ...ws, _source: 'External API' })),
-  ];
-
+  const allResults = [...species, ...externalSpecies];
   const noResults = !loading && allResults.length === 0;
 
   return (
@@ -221,7 +466,6 @@ export default function Species() {
 
       {loading && <div className="text-center text-white mt-10">Loading species...</div>}
       {error && <div className="text-center text-red-400 whitespace-pre-line mt-10">{error}</div>}
-
       {noResults && (
         <div className="text-center text-cyan-200 italic mb-8">
           No results found for "{search}". Try another species name.
@@ -246,7 +490,7 @@ export default function Species() {
             />
             <h3 className="text-lg font-semibold text-cyan-100 mb-1">{item.name}</h3>
             <div className="text-xs text-cyan-300 italic mb-2">
-              {item.scientificName || item.authority}
+              {item.scientificName}
             </div>
             <div className="text-sm mb-2 text-cyan-50 text-center">
               {item.description || (item.rank ? `Rank: ${item.rank}` : '')}
@@ -256,7 +500,7 @@ export default function Species() {
             </div>
             <span
               className={`mt-2 text-xs px-2 py-0.5 rounded ${
-                item._source === 'Local DB' ? 'bg-cyan-800' : 'bg-green-800'
+                item._source === 'GBIF' ? 'bg-cyan-800' : 'bg-green-800'
               } text-white`}
             >
               {item._source}
@@ -265,65 +509,57 @@ export default function Species() {
         ))}
       </div>
 
+      {/* Modal */}
       {modal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white text-black rounded-xl p-8 max-w-md w-full relative">
+          <div className="bg-white text-black rounded-xl p-8 max-w-lg w-full relative overflow-y-auto max-h-[90vh]">
             <button
               className="absolute top-2 right-2 text-2xl text-cyan-700"
               onClick={() => setModal(null)}
             >
               &times;
             </button>
+
             <img
               src={modal.imageUrl || modal.image || '/default-avatar.png'}
               alt={modal.name}
               className="w-40 h-40 object-cover rounded mx-auto mb-4 border-2 border-cyan-400"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/default-avatar.png';
-              }}
             />
-            <h2 className="text-2xl font-bold mb-2 text-cyan-800">{modal.name}</h2>
-            <div className="text-sm text-cyan-700 mb-2">
-              {modal.scientificName || modal.authority}
+
+            <h2 className="text-2xl font-bold mb-1 text-cyan-800 text-center">{modal.name}</h2>
+            <div className="text-sm text-center text-cyan-700 mb-2 italic">
+              {modal.scientificName || 'Unknown scientific name'}
             </div>
-            <div className="mb-2">
-              {modal.description || (modal.rank ? `Rank: ${modal.rank}` : '')}
+
+            <div className="space-y-2 text-sm">
+              {modal.rank && <p><strong>Rank:</strong> {modal.rank}</p>}
+              {modal.description && <p><strong>Description:</strong> {modal.description}</p>}
+              {modal.habitat && <p><strong>Habitat:</strong> {modal.habitat}</p>}
+              {modal.kingdom && <p><strong>Kingdom:</strong> {modal.kingdom}</p>}
+              {modal.family && <p><strong>Family:</strong> {modal.family}</p>}
             </div>
-            <div className="mb-2 text-xs text-cyan-700">
-              {modal.habitat && `Habitat: ${modal.habitat}`}
-            </div>
-            {modal.facts && modal.facts.length > 0 && (
-              <ul className="text-xs text-cyan-700 list-disc pl-4 mb-2">
-                {modal.facts.map((fact, idx) => (
-                  <li key={idx}>{fact}</li>
-                ))}
+
+            <div className="mt-4">
+              <p className="font-semibold">Research Links:</p>
+              <ul className="list-disc list-inside text-cyan-800 text-xs">
+                <li>
+                  <a href={`https://www.gbif.org/species/search?q=${modal.scientificName}`} target="_blank" rel="noreferrer">GBIF</a>
+                </li>
+                <li>
+                  <a href={`https://www.marinespecies.org/aphia.php?p=search&q=${modal.scientificName}`} target="_blank" rel="noreferrer">WoRMS</a>
+                </li>
+                <li>
+                  <a href={`https://www.fishbase.se/search.php?what=species&genus=${modal.scientificName?.split(' ')[0]}`} target="_blank" rel="noreferrer">FishBase</a>
+                </li>
+                <li>
+                  <a href={`https://en.wikipedia.org/wiki/${modal.scientificName?.replace(/\s+/g, '_')}`} target="_blank" rel="noreferrer">Wikipedia</a>
+                </li>
               </ul>
-            )}
-            {modal.sightings && modal.sightings.length > 0 && (
-              <div className="mt-4">
-                <h4 className="text-md font-semibold text-cyan-700 mb-2">Sightings:</h4>
-                <ul className="text-xs text-gray-800 max-h-40 overflow-y-auto space-y-1">
-                  {modal.sightings.map((s, i) => (
-                    <li key={i} className="p-2 bg-cyan-100/30 rounded">
-                      <span className="block font-medium">
-                        {s.reporter || 'added from satellite'}
-                      </span>
-                      <span className="block text-xs">
-                        📍 {s.location?.lat}, {s.location?.lng}
-                      </span>
-                      <span className="block text-xs">
-                        🕒 {new Date(s.createdAt).toLocaleString()}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className="text-xs text-gray-500 mt-2">Source: {modal._source}</div>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
