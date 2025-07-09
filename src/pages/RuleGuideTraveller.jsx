@@ -1,3 +1,4 @@
+//Documentaion Guide
 import React from "react";
 import FishLoader from "../components/FishLoader";
 export default function RuleGuideTraveller() {

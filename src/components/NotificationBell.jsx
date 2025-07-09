@@ -1,3 +1,4 @@
+//not part of main Application 
 // src/components/NotificationBell.jsx
 import React, { useEffect, useState } from 'react';
 import { Bell } from 'lucide-react'; // or any bell icon

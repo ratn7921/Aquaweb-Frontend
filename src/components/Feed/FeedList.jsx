@@ -1,54 +1,5 @@
 
-// // ----------------------------------------------------------------------------
-// // src/components/Feed/FeedList.jsx
-// import React, { useState, useEffect } from 'react';
-// import { fetchFeed } from '../../api/feedApi';
-// import PostCard from './PostCard';
-
-// export default function FeedList() {
-//   const [posts, setPosts] = useState([]);
-//   const [page, setPage] = useState(1);
-//   const [hasMore, setHasMore] = useState(true);
-
-//   useEffect(() => {
-//     loadPosts(page);
-//   }, [page]);
-
-//   const loadPosts = async (pg) => {
-//     try {
-//       const feed = await fetchFeed(pg);
-//       if (feed.length === 0) setHasMore(false);
-//       setPosts(prev => [...prev, ...feed]);
-//     } catch (err) {
-//       console.error('Failed to load feed:', err);
-//     }
-//   };
-
-//   if (posts.length === 0) {
-//     return (
-//       <div className="text-center py-12">
-//         <h2 className="text-xl">No posts yet!</h2>
-//         <p className="text-gray-600">Be the first to create a post.</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <>
-//       {posts.map(p => <PostCard key={p._id} post={p} />)}
-//       {hasMore && (
-//         <button
-//           onClick={() => setPage(prev => prev + 1)}
-//           className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded mx-auto block"
-//         >
-//           Load more
-//         </button>
-//       )}
-//     </>
-//   );
-// }
-
-
+//not part of main Application 
 
 // ----------------------------------------------------------------------------
 // src/components/Feed/FeedList.jsx

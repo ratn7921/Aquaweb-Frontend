@@ -1,3 +1,5 @@
+//not part of main Application 
+
 import React from 'react';
 import bgVideo from '../assets/bg-2video.mp4'; // Adjust if needed
 

@@ -1,3 +1,5 @@
+//not part of main Application 
+
 // src/pages/NewPost.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

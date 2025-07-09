@@ -1,41 +1,4 @@
-// // --- src/pages/RoleSelection.jsx ---
-// import { useNavigate } from 'react-router-dom';
-
-// export default function RoleSelection() {
-//   const navigate = useNavigate();
-//   return (
-//     <div
-//       className="min-h-screen flex items-center justify-center text-white relative bg-gradient-to-br from-cyan-600 to-cyan-900"
-//       style={{
-//         backgroundImage: "url('/assets/Bg-roleSelection.jpg'), linear-gradient(135deg, #0891b2 0%, #1e3a8a 100%)",
-//         backgroundSize: 'cover',
-//         backgroundPosition: 'center',
-//         backgroundRepeat: 'no-repeat',
-//       }}
-//     >
-//       <div className="card text-center w-full max-w-md mx-auto p-10 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl">
-//         <h2 className="text-4xl font-extrabold mb-8 tracking-tight text-white drop-shadow-lg">
-//           Select Your Role
-//         </h2>
-//         <button
-//           onClick={() => navigate('/rule-guide-traveller')}
-//           className="btn-main block w-full mb-5 text-lg font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition"
-//         >
-//           🐬 Marine Enthusiast
-//         </button>
-//         <button
-//           onClick={() => navigate('/rule-guide-expert')}
-//           className="btn-main block w-full text-lg font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition"
-//         >
-//           🔬 Marine Expert
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
+//useless page
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import FishLoader from '../components/FishLoader';

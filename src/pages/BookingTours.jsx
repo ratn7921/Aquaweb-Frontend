@@ -1,30 +1,6 @@
-// // src/pages/BookingTours.jsx
-// import React, { useEffect, useState } from 'react';
-// import axios from '../api'; // Make sure this uses your custom instance
-
-// export default function BookingTours() {
-//   const [tours, setTours] = useState([]);
-
-//   useEffect(() => {
-//     axios.get('/tours/seattle') // Update `seattle` to dynamic value if needed
-//       .then((res) => setTours(res.data))
-//       .catch((err) => console.error('Error fetching tours:', err));
-//   }, []);
-
-//   return (
-//     <div>
-//       <h2>Available Tours</h2>
-//       <ul>
-//         {tours.map((tour, index) => (
-//           <li key={index}>{tour.title || 'Unnamed Tour'}</li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
 
 
-
+//not part of main Application 
 
 import React, { useEffect, useState } from 'react';
 import axios from '../api/axios'; // your custom axios instance

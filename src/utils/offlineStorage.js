@@ -1,15 +1,4 @@
-// // ----------------------------------------
-// // FRONTEND: src/utils/offlineStorage.js
-// import localforage from 'localforage';
-// const store = localforage.createInstance({ name: 'aquaweb_offline' });
-// export const queueReport = async report => {
-//   const list = (await store.getItem('reports')) || [];
-//   list.push(report);
-//   await store.setItem('reports', list);
-// };
-// export const getReports = () => store.getItem('reports');
-// export const clearReports = () => store.removeItem('reports');
-
+//not part of main Application 
 
 
 

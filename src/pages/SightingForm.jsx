@@ -1,10 +1,7 @@
-
-
-
-
+//main feature of application
 import { useState } from 'react';
 import axios from '../api/axios';
-import { uploadMedia } from '../api/mediaApi'; // ✅ Add this
+// import { uploadMedia } from '../api/mediaApi'; // ✅ Add this
 
 export default function SightingForm() {
   const [formData, setFormData] = useState({

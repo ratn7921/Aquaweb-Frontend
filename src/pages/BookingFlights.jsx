@@ -1,36 +1,4 @@
-
-// // ---------- src/pages/BookingFlights.jsx ----------
-// import React, { useState } from 'react';
-// import { searchFlights } from '../api/amadeusApi';
-
-// export default function BookingFlights() {
-//   const [origin, setOrigin] = useState('NYC');
-//   const [dest, setDest] = useState('LON');
-//   const [maxPrice, setMaxPrice] = useState(500);
-//   const [results, setResults] = useState(null);
-
-//   const handleSearch = async () => {
-//     const data = await searchFlights(origin, dest, maxPrice);
-//     setResults(data);
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <h2 className="text-xl font-bold mb-4">Flight Search</h2>
-//       <div className="flex gap-2 mb-4">
-//         <input value={origin} onChange={e => setOrigin(e.target.value)} placeholder="Origin (IATA)" className="border p-1" />
-//         <input value={dest} onChange={e => setDest(e.target.value)} placeholder="Destination (IATA)" className="border p-1" />
-//         <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder="Max Price" className="border p-1 w-24" />
-//         <button onClick={handleSearch} className="bg-cyan-600 text-white px-3">Search</button>
-//       </div>
-//       {results && (
-//         <pre className="bg-gray-100 p-2 overflow-auto">{JSON.stringify(results, null, 2)}</pre>
-//       )}
-//     </div>
-//   );
-// }
-
-
+//not part of main Application 
 // ---------- src/pages/BookingFlights.jsx ----------
 import React, { useState } from 'react';
 import { searchFlights } from '../api/aviationApi'; // ✅ Correct import

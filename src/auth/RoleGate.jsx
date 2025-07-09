@@ -1,16 +1,3 @@
-// // src/auth/RoleGate.jsx
-// import { useUser } from './useUserContext';
-// import { Navigate } from 'react-router-dom';
-
-// export default function RoleGate({ requiredRole, children }) {
-//   const { user, loading } = useUser();
-//   if (loading) return <div>Loading…</div>;
-//   if (!user || !user.roles.includes(requiredRole)) {
-//     return <Navigate to="/dashboard" replace />;
-//   }
-//   return children;
-// }
-
 
 
 // src/auth/RoleGate.jsx
